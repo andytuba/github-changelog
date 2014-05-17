@@ -100,9 +100,9 @@ module.exports.run = function(options) {
       callback(null, changelog({
         header: header,
         issues: issues,
-        owner: options.owner,
+        owner: owner,
         repo: options.repo,
-        baseUrl: ['http://github.com', options.owner, options.repo, ''].join('/')
+        baseUrl: ['http://github.com', owner, options.repo, ''].join('/')
       }));
     });
   }
