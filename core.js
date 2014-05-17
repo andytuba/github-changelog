@@ -130,7 +130,8 @@ module.exports.run = function(options) {
     fetchIssues,
     filterIssues,
     formatChangelog,
-    writeChangelog
+    writeChangelog,
+    options.done || function() { }
   ], function(err) {
     if (err) {
       console.error(err.message);
