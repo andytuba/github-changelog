@@ -10,7 +10,6 @@ var async = require('async');
 var handlebars = require('handlebars');
 
 module.exports.run = function(options) {
-  debugger;
   if (!options.repo) {
     throw false;
   }
