@@ -100,8 +100,7 @@ module.exports.run = function(options) {
         header: header,
         issues: issues,
         owner: owner,
-        repo: options.repo,
-        baseUrl: ['http://github.com', owner, options.repo, ''].join('/')
+        repo: options.repo
       }));
     });
   }
