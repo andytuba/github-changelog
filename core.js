@@ -48,7 +48,7 @@ module.exports.run = function(options) {
     var limit = 100;
     var issues = [];
     function fetch() {
-      github.issues.repoIssues({
+      var issuesParams = {
         user: owner,
         repo: options.repo,
         state: 'closed',
@@ -56,7 +56,8 @@ module.exports.run = function(options) {
         since: since,
         per_page: limit,
         page: page
-      }, function(err, batch) {
+      };
+      github.issues.repoIssues(issuesParams, function(err, batch) {
         if (err) {
           return callback(err);
         }
