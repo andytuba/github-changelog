@@ -15,6 +15,7 @@ program
     .option('-s, --since <iso-date>', 'Last changelog date.  If the "file" ' +
         'option is used and "since" is not provided, the mtime of the output ' +
         'file will be used.')
+    .option('-l, --labels <labels>', 'String-delimited list of label names')
     .option('-m, --merged', 'List merged pull requests only.')
     .option('-e, --header <header>', 'Header text.  Default is "Changes ' +
         'since <since>".')

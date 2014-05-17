@@ -32,6 +32,7 @@ module.exports.run = function(options) {
   var since = options.since || fs.statSync(options.file).mtime.toISOString();
   var header = options.header || 'Changes since ' + since;
   var owner = options.owner || options.username;
+  var labels = options.labels || '';
 
   var github = new Client({version: '3.0.0'});
 
@@ -53,6 +54,7 @@ module.exports.run = function(options) {
         repo: options.repo,
         state: 'closed',
         sort: 'updated',
+        labels: labels,
         since: since,
         per_page: limit,
         page: page
