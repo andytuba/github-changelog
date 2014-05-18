@@ -74,6 +74,52 @@ module.exports.run = function(options) {
     fetch();
   }
 
+  function addClosedBy(issues, callback) {
+    fetchEvents(function(err, events) {
+      async.map(issues, setClosingIssue.bind(this, events), callback);
+    });
+  }
+
+  function setClosingIssue(events, issue, mappedTo) {
+    if (issue.pull_request.url) {
+      process.nextTick(function() {
+        mappedTo(null, issue);
+      });
+    } else {
+      var issueClosedEvent, simultaneousClosedEvent;
+      events.some(function(event) {
+        if (event.event === "closed") {
+          if (event.issue && event.issue.number == issue.number) {
+            issueClosedEvent = event;
+            return true;
+          }
+        }
+      });
+
+      events.some(function(event) {
+        if (issueClosedEvent !== event) {
+          if (event.event == "closed") {
+            if (event.created_at === issueClosedEvent.created_at) {
+              // I wish GitHub provided a more exact way to match
+              // "this PR's body, which 'fixes #NN', closed that issue"
+              simultaneousClosedEvent = event;
+              return true;
+            }
+          }
+        }
+      });
+
+      if (simultaneousClosedEvent) {
+        issue.closed_by_issue = simultaneousClosedEvent.issue;
+      }
+
+      process.nextTick(function() {
+        mappedTo(null, issue);
+      });
+    }
+  }
+
+
   var events;
   function fetchEvents(callback) {
     if (events) {
@@ -172,6 +218,7 @@ module.exports.run = function(options) {
 
   async.waterfall([
     fetchIssues,
+    addClosedBy,
     filterMerged,
     formatChangelog,
     writeChangelog,
