@@ -74,7 +74,7 @@ module.exports.run = function(options) {
     fetch();
   }
 
-  function filterIssues(issues, callback) {
+  function filterMerged(issues, callback) {
     if (!options.merged) {
       process.nextTick(function() {
         callback(null, issues);
@@ -128,7 +128,7 @@ module.exports.run = function(options) {
 
   async.waterfall([
     fetchIssues,
-    filterIssues,
+    filterMerged,
     formatChangelog,
     writeChangelog,
     options.done || function() { }
