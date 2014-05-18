@@ -74,6 +74,50 @@ module.exports.run = function(options) {
     fetch();
   }
 
+  var events;
+  function fetchEvents(callback) {
+    if (events) {
+      process.nextTick(function() { callback(null, events); });
+      return;
+    }
+
+    var page = 1;
+    var limit = 100;
+    events = []
+    function fetch() {
+      var params = {
+        user: owner,
+        repo: options.repo,
+        per_page: limit,
+        page: page
+      };
+      github.events.getFromRepoIssues(params, function(err, batch) {
+        if (err) {
+          return callback(err);
+        }
+        events = events.concat(batch);
+
+        var done = false;
+        if (batch.length < limit) {
+          done = true;
+        } else if (Date.parse(batch[batch.length - 1].created_at) < since) {
+          done = true;
+        }
+
+        if (!done) {
+          ++page;
+          fetch();
+        } else {
+          callback(null, events);
+        }
+      });
+    }
+    fetch();
+  }
+
+
+
+
   function filterMerged(issues, callback) {
     if (!options.merged) {
       process.nextTick(function() {
