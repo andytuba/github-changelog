@@ -64,8 +64,6 @@ module.exports.run = function(_options) {
       var args = [].slice.call(arguments, 0, arguments.length - 1);
       var callback = arguments[arguments.length - 1];
 
-      console.log(args);
-
       args.unshift(null);
       callback.apply(this, args);
     },
@@ -162,7 +160,6 @@ function filterMerged(issues, callback) {
     });
   } else {
     fetchEvents(function(err, events) {
-      debugger;
       async.filter(issues, notUnmergedPR.bind(this, events), function(result) {
         callback(null, result);
       });
