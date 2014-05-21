@@ -17,7 +17,6 @@ var header;
 var labels;
 
 module.exports.run = function(_options) {
-  console.log("run");
   options = _options;
   if (!options.repo) {
     throw false;
@@ -59,8 +58,8 @@ module.exports.run = function(_options) {
     /*  */
     function (callback) {
       // Log issues
-      console.log("checkpoint!");
-      debugger;
+//      console.log("checkpoint!");
+//      debugger;
 
       var args = [].slice.call(arguments, 0, arguments.length - 1);
       var callback = arguments[arguments.length - 1];
@@ -237,7 +236,9 @@ var limit = 100;
 
 function fetchEvents(callback) {
   if (events) { // already fetched
-    process.nextTick(function() { callback(null, events); });
+    process.nextTick(function() {
+      callback(null, events);
+    });
     return;
   }
 
@@ -249,20 +250,18 @@ function fetchEvents(callback) {
     tidyUpEvents,
     storeEventsToFile,
     filterEventsByType,
-    function(result, callback) {
+    function(result) {
       // Stash in case fetchEvents is called again
       events = result;
       process.nextTick(function() {
         callback(null, result);
       });
-    },
-    callback
+    }
   ]);
 }
 
 function loadEventsFromFile(callback) {
   var events = [];
-  console.log("loading from ", options.events);
   if (options.events) {
     fs.readFile(options.events, "utf8" ,function(err, data) {
       if (!err) {
@@ -290,12 +289,13 @@ function storeEventsToFile(events, callback) {
   var err = null;
   if (options.events) {
     fs.writeFile(options.events, JSON.stringify(events, null, 4), function(err) {
+      /*
         if(err) {
           console.log(err);
         } else {
           console.log("Saved events", events.length, "to " + options.events);
         }
-
+    */
         process.nextTick(function() {
           callback(err, events);
         });
