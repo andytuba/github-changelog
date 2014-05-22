@@ -229,6 +229,19 @@ function isFixed(events, issue, callback) {
     });
     return;
   }
+
+
+/*
+  if (options.debug >= 2) console.log("issue", issue.number, "closed not fixed");
+  process.nextTick(function() {
+    callback(false);
+  });
+*/
+  // shitty workaround until i can sort out "issue closed by pr"
+  issue.title += " (fixed?)";
+  process.nextTick(function() {
+      callback(true);
+  });
 }
 
 function formatChangelog(issues, callback) {
