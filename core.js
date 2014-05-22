@@ -53,14 +53,15 @@ module.exports.run = function(_options) {
 
   async.waterfall([
     fetchIssues,
+    logIssues.bind(this, "fetchIssues"),
     addClosedBy,
-    filterMerged,
+    logIssues.bind(this, "addClosedBy"),
+    filterFixed,
+    logIssues.bind(this, "filterFixed"),
     /*  */
     function (callback) {
       // Log issues
 //      console.log("checkpoint!");
-//      debugger;
-
       var args = [].slice.call(arguments, 0, arguments.length - 1);
       var callback = arguments[arguments.length - 1];
 
@@ -82,6 +83,19 @@ module.exports.run = function(_options) {
 
 };
 
+
+function logIssues(after, issues, callback) {
+  if (options.debug >= 3) {
+    console.log("after", after, "issues.length=", issues.length);
+  }
+  if (options.debug >= 6) {
+    var ids = issues.map(function(item) { return parseInt(item.number, 10); });
+    ids.sort();
+    console.log(ids.join(' '));
+  }
+
+  callback(null, issues);
+}
 
 ///////////////////////////////////////
 
