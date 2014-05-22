@@ -167,39 +167,47 @@ function setClosingIssue(events, issue, callback) {
 }
 
 
-function filterMerged(issues, callback) {
-  if (options.merged === false) {
+function filterFixed(issues, callback) {
+  if (options.fixed === false) {
     process.nextTick(function() {
       callback(null, issues);
     });
   } else {
     fetchEvents(function(err, events) {
-      async.filter(issues, notUnmergedPR.bind(this, events), function(result) {
+      async.filter(issues, isFixed.bind(this, events), function(result) {
         callback(null, result);
       });
     });
   }
 }
 
-function notUnmergedPR(events, issue, callback) {
-  if (!(issue.pull_request && issue.pull_request.url)) {
+function isFixed(events, issue, callback) {
     process.nextTick(function() {
       callback(true);
     });
   } else {
     var mergedEvent;
+  var fixedEvent;
     events.some(function(event) {
-      if (event.event == "merged") {
         if (event.issue.id === issue.id) {
-          mergedEvent = event;
-          return true;
+      if (event.event == "closed" && event.commit_id) {
+        fixedEvent = event;
+        if (options.debug >= 5) console.log("issue", issue.number, "fixed by", fixedEvent.commit_id);
+      } else if (event.event == 'merged') {
+        fixedEvent = event;
+        if (options.debug >= 6) console.log("issue", issue.number, "merged");
         }
+
+      return !!fixedEvent;
       }
     });
 
+  if (fixedEvent) {
     process.nextTick(function() {
-      callback(!!mergedEvent);
+      if (options.debug >= 5) console.log("issue", issue.number, "fixed?", fixedEvent && fixedEvent.id || false);
+      callback(!!fixedEvent);
     });
+    return;
   }
 }
 
