@@ -61,7 +61,7 @@ module.exports.run = function(_options) {
     /*  */
     function (callback) {
       // Log issues
-//      console.log("checkpoint!");
+     // console.log("checkpoint!");
       var args = [].slice.call(arguments, 0, arguments.length - 1);
       var callback = arguments[arguments.length - 1];
 
@@ -184,19 +184,19 @@ function filterFixed(issues, callback) {
 function isFixed(events, issue, callback) {
   if (options.label_fixed) {
     if (issue.labels.map(function(label) { return label.name }).indexOf(options.label_fixed) != -1) {
-    process.nextTick(function() {
-      callback(true);
-    });
+      process.nextTick(function() {
+        callback(true);
+      });
       return;
     }
   }
 
-    if (options.label_wontfix) {
-    if (issue.labels.map(function(label) { return label.name }).indexOf(options.label_wontfix) != -1) {
-      process.nextTick(function() {
+  if (options.label_wontfix) {
+  	if (issue.labels.map(function(label) { return label.name }).indexOf(options.label_wontfix) != -1) {
+    	process.nextTick(function() {
         callback(false);
       });
-      return;
+    	return;
     }
   }
 
@@ -208,19 +208,19 @@ function isFixed(events, issue, callback) {
     return;
 }
   var fixedEvent;
-    events.some(function(event) {
-        if (event.issue.id === issue.id) {
+  events.some(function(event) {
+    if (event.issue.id === issue.id) {
       if (event.event == "closed" && event.commit_id) {
         fixedEvent = event;
         if (options.debug >= 5) console.log("issue", issue.number, "fixed by", fixedEvent.commit_id);
       } else if (event.event == 'merged') {
         fixedEvent = event;
         if (options.debug >= 6) console.log("issue", issue.number, "merged");
-        }
+      }
 
       return !!fixedEvent;
-      }
-    });
+    }
+  });
 
   if (fixedEvent) {
     process.nextTick(function() {
