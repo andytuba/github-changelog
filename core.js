@@ -182,11 +182,31 @@ function filterFixed(issues, callback) {
 }
 
 function isFixed(events, issue, callback) {
+  if (options.label_fixed) {
+    if (issue.labels.map(function(label) { return label.name }).indexOf(options.label_fixed) != -1) {
     process.nextTick(function() {
       callback(true);
     });
-  } else {
-    var mergedEvent;
+      return;
+    }
+  }
+
+    if (options.label_wontfix) {
+    if (issue.labels.map(function(label) { return label.name }).indexOf(options.label_wontfix) != -1) {
+      process.nextTick(function() {
+        callback(false);
+      });
+      return;
+    }
+  }
+
+  if (issue.closed_by_issue) {
+    if (options.debug >= 10) console.log("issue", issue.number, "closed by", issue.closed_by_issue.number);
+    process.nextTick(function() {
+      callback(true);
+    });
+    return;
+}
   var fixedEvent;
     events.some(function(event) {
         if (event.issue.id === issue.id) {
